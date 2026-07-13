@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Folio — Research Paper Review Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Left: masthead + status ladder -->
+  <aside class="masthead">
+    <div class="brand">
+      <p class="brand-eyebrow">Manuscript Review Portal</p>
+      <h1 class="brand-word">Folio</h1>
+      <p class="brand-tagline">From submission to decision, tracked in the open.</p>
+    </div>
+
+    <div class="ladder">
+      <p class="ladder-title">Manuscript lifecycle</p>
+      <div class="ladder-track">
+        <div class="ladder-step">Submitted</div>
+        <div class="ladder-step is-current">Under review</div>
+        <div class="ladder-step">Revision required</div>
+        <div class="ladder-step">
+          Final decision
+          <div class="ladder-branch">
+            <span class="ladder-tag accept">Accepted</span>
+            <span class="ladder-tag reject">Rejected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="masthead-foot">ADBMS Group Project — Research Paper Review Management System</p>
+  </aside>
+
+  <!-- Right: login / register -->
+  <main class="form-panel">
+    <div class="form-card">
+
+      <div class="form-head">
+        <h1 id="formTitle">Sign in</h1>
+        <p id="formSub">Enter your credentials to access your dashboard.</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login">Sign In</button>
+        <button class="tab-btn" data-tab="register">Register as Author</button>
+      </div>
+
+      <!-- Sign in -->
+      <div class="pane active" id="pane-login">
+        <form id="loginForm">
+          <div class="field">
+            <label for="loginUser">Username or email</label>
+            <input id="loginUser" name="username" type="text" autocomplete="username" required>
+          </div>
+          <div class="field">
+            <label for="loginPass">Password</label>
+            <input id="loginPass" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <button class="btn-primary" type="submit">Sign In</button>
+          <div class="form-msg" id="loginMsg"></div>
+        </form>
+        <div class="form-foot">
+          Editors and reviewers are added by the venue admin — <strong>use the account you were given</strong>. Authors can register directly.
+        </div>
+      </div>
+
+      <!-- Register (Author) -->
+      <div class="pane" id="pane-register">
+        <form id="registerForm">
+          <div class="field">
+            <label for="regName">Full name</label>
+            <input id="regName" name="name" type="text" required>
+          </div>
+          <div class="field">
+            <label for="regEmail">Email</label>
+            <input id="regEmail" name="email" type="email" required>
+          </div>
+          <div class="field">
+            <label for="regAffil">Affiliation</label>
+            <input id="regAffil" name="affiliation" type="text" placeholder="University or institution">
+          </div>
+          <div class="field">
+            <label for="regUser">Username</label>
+            <input id="regUser" name="username" type="text" autocomplete="username" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="regPass">Password</label>
+              <input id="regPass" name="password" type="password" autocomplete="new-password" required>
+            </div>
+            <div class="field">
+              <label for="regPass2">Confirm password</label>
+              <input id="regPass2" name="password2" type="password" autocomplete="new-password" required>
+            </div>
+          </div>
+          <button class="btn-primary" type="submit">Create Author Account</button>
+          <div class="form-msg" id="registerMsg"></div>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="js/auth.js"></script>
+</body>
+</html>
