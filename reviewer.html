@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reviewer Dashboard — RPRMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-role="reviewer">
+
+<div class="dash-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <p class="sb-brand-word">RPRMS</p>
+      <p class="sb-brand-role">Reviewer Portal</p>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="sb-link active" data-page="dashboard" data-title="Dashboard"><span class="sb-icon">#</span>Dashboard</button>
+      <button class="sb-link" data-page="assignments" data-title="My Assignments"><span class="sb-icon">≡</span>My Assignments</button>
+      <button class="sb-link" data-page="review" data-title="Submit Review"><span class="sb-icon">✓</span>Submit Review</button>
+    </nav>
+
+    <div class="sb-foot">
+      <button class="sb-signout">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="dash-main">
+    <div class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="topbar-user">
+        <span>Dr. Farhana Islam</span>
+        <div class="avatar">FI</div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- ================= DASHBOARD ================= -->
+      <section class="dash-page active" id="page-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">Total assignments</div></div>
+          <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Pending</div></div>
+          <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Completed</div></div>
+          <div class="stat-card"><div class="stat-num">Databases</div><div class="stat-label">Area of expertise</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Pending assignments</h2>
+            <button class="btn-ghost" data-goto="assignments">View all</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Assignment ID</th><th>Paper</th><th>Assigned</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">A-2201</td>
+                <td>Efficient Query Optimization in Distributed Databases</td>
+                <td>2026-06-16</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+                <td><button class="btn-ghost" data-goto="review">Review</button></td>
+              </tr>
+              <tr>
+                <td class="mono">A-2195</td>
+                <td>Benchmarking Vector Search at Scale</td>
+                <td>2026-06-10</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+                <td><button class="btn-ghost" data-goto="review">Review</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= ASSIGNMENTS ================= -->
+      <section class="dash-page" id="page-assignments">
+        <div class="panel">
+          <div class="panel-head"><h2>All my assignments</h2></div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Assignment ID</th><th>Paper</th><th>Assigned</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="mono">A-2201</td><td>Efficient Query Optimization in Distributed Databases</td><td>2026-06-16</td><td><span class="badge badge-pending">Pending</span></td><td><button class="btn-ghost" data-goto="review">Review</button></td></tr>
+              <tr><td class="mono">A-2195</td><td>Benchmarking Vector Search at Scale</td><td>2026-06-10</td><td><span class="badge badge-pending">Pending</span></td><td><button class="btn-ghost" data-goto="review">Review</button></td></tr>
+              <tr><td class="mono">A-2170</td><td>Indexing Strategies for Time-Series Workloads</td><td>2026-05-22</td><td><span class="badge badge-completed">Completed</span></td><td class="mono">Score: 8</td></tr>
+              <tr><td class="mono">A-2154</td><td>Consistency Models in Geo-Replicated Databases</td><td>2026-05-09</td><td><span class="badge badge-completed">Completed</span></td><td class="mono">Score: 6</td></tr>
+              <tr><td class="mono">A-2130</td><td>Adaptive Caching for OLAP Queries</td><td>2026-04-27</td><td><span class="badge badge-completed">Completed</span></td><td class="mono">Score: 9</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= SUBMIT REVIEW ================= -->
+      <section class="dash-page" id="page-review">
+        <div class="panel">
+          <div class="panel-head"><h2>Submit a review</h2></div>
+          <div class="panel-body">
+            <form id="reviewForm" data-mock-submit="reviewer.php?action=submit_review">
+              <div class="field">
+                <label for="rAssignment">Assignment</label>
+                <select id="rAssignment" name="assignment_id" required>
+                  <option value="">Select a pending assignment</option>
+                  <option value="A-2201">A-2201 — Efficient Query Optimization in Distributed Databases</option>
+                  <option value="A-2195">A-2195 — Benchmarking Vector Search at Scale</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="rScore">Score (1–10)</label>
+                  <input id="rScore" name="score" type="number" min="1" max="10" required>
+                </div>
+                <div class="field">
+                  <label for="rRec">Recommendation</label>
+                  <select id="rRec" name="recommendation" required>
+                    <option value="">Select</option>
+                    <option value="Accept">Accept</option>
+                    <option value="Revise">Revise</option>
+                    <option value="Reject">Reject</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="rComments">Comments</label>
+                <input id="rComments" name="comments" type="text" placeholder="Feedback for the editor and authors" required>
+              </div>
+              <button class="btn-primary" type="submit">Submit Review</button>
+              <div class="form-msg"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

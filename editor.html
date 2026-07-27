@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editor Dashboard — RPRMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-role="editor">
+
+<div class="dash-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <p class="sb-brand-word">RPRMS</p>
+      <p class="sb-brand-role">Editor Portal</p>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="sb-link active" data-page="dashboard" data-title="Dashboard"><span class="sb-icon">#</span>Dashboard</button>
+      <p class="sb-section-label">Workflow</p>
+      <button class="sb-link" data-page="papers" data-title="Papers"><span class="sb-icon">≡</span>Papers</button>
+      <button class="sb-link" data-page="assign" data-title="Assign Reviewer"><span class="sb-icon">→</span>Assign Reviewer</button>
+      <button class="sb-link" data-page="decisions" data-title="Decisions"><span class="sb-icon">✓</span>Decisions</button>
+      <p class="sb-section-label">Directory</p>
+      <button class="sb-link" data-page="reviewers" data-title="Reviewers"><span class="sb-icon">◎</span>Reviewers</button>
+    </nav>
+
+    <div class="sb-foot">
+      <button class="sb-signout">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="dash-main">
+    <div class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="topbar-user">
+        <span>Prof. Junaed Ahmed</span>
+        <div class="avatar">JA</div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- ================= DASHBOARD ================= -->
+      <section class="dash-page active" id="page-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num">42</div><div class="stat-label">Total papers</div></div>
+          <div class="stat-card"><div class="stat-num">9</div><div class="stat-label">Pending decisions</div></div>
+          <div class="stat-card"><div class="stat-num">18</div><div class="stat-label">Active reviewers</div></div>
+          <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Tracks</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Papers awaiting a decision</h2>
+            <button class="btn-ghost" data-goto="decisions">View all</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Paper ID</th><th>Title</th><th>Track</th><th>Reviews in</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">P-1038</td>
+                <td>Efficient Query Optimization in Distributed Databases</td>
+                <td>Databases</td>
+                <td>3 / 3</td>
+                <td><button class="btn-ghost" data-goto="decisions">Decide</button></td>
+              </tr>
+              <tr>
+                <td class="mono">P-1029</td>
+                <td>A Survey of Federated Learning Privacy Techniques</td>
+                <td>Security</td>
+                <td>2 / 3</td>
+                <td><button class="btn-ghost" data-goto="decisions">Decide</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= PAPERS ================= -->
+      <section class="dash-page" id="page-papers">
+        <div class="panel">
+          <div class="panel-head"><h2>All submitted papers</h2></div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Paper ID</th><th>Title</th><th>Track</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="mono">P-1042</td><td>Graph Neural Networks for Citation Prediction</td><td>Machine Learning</td><td><span class="badge badge-review">Under Review</span></td><td><button class="btn-ghost" data-goto="assign">Assign</button></td></tr>
+              <tr><td class="mono">P-1038</td><td>Efficient Query Optimization in Distributed Databases</td><td>Databases</td><td><span class="badge badge-review">Under Review</span></td><td><button class="btn-ghost" data-goto="decisions">Decide</button></td></tr>
+              <tr><td class="mono">P-1029</td><td>A Survey of Federated Learning Privacy Techniques</td><td>Security</td><td><span class="badge badge-revision">Revision Required</span></td><td><button class="btn-ghost" data-goto="decisions">Decide</button></td></tr>
+              <tr><td class="mono">P-1035</td><td>Interpretable Anomaly Detection for IoT Networks</td><td>Machine Learning</td><td><span class="badge badge-submitted">Submitted</span></td><td><button class="btn-ghost" data-goto="assign">Assign</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= ASSIGN REVIEWER ================= -->
+      <section class="dash-page" id="page-assign">
+        <div class="panel">
+          <div class="panel-head"><h2>Assign a reviewer</h2></div>
+          <div class="panel-body">
+            <form id="assignForm" data-mock-submit="editor.php?action=assign_reviewer">
+              <div class="field">
+                <label for="aPaper">Paper</label>
+                <select id="aPaper" name="paper_id" required>
+                  <option value="">Select a paper</option>
+                  <option value="P-1042">P-1042 — Graph Neural Networks for Citation Prediction</option>
+                  <option value="P-1035">P-1035 — Interpretable Anomaly Detection for IoT Networks</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="aReviewer">Reviewer</label>
+                <select id="aReviewer" name="reviewer_id" required>
+                  <option value="">Select a reviewer</option>
+                  <option value="R-500">R-500 — Dr. Farhana Islam (Databases)</option>
+                  <option value="R-501">R-501 — Dr. Rezwan Ahmed (Machine Learning)</option>
+                  <option value="R-502">R-502 — Dr. Samiul Haque (Security)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="aDate">Assignment date</label>
+                <input id="aDate" name="assignment_date" type="date" data-default-today required>
+              </div>
+              <button class="btn-primary" type="submit">Assign Reviewer</button>
+              <div class="form-msg"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DECISIONS ================= -->
+      <section class="dash-page" id="page-decisions">
+        <div class="panel">
+          <div class="panel-head"><h2>Papers awaiting a decision</h2></div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Paper ID</th><th>Title</th><th>Avg. score</th><th>Recommendations</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="mono">P-1038</td><td>Efficient Query Optimization in Distributed Databases</td><td>8.3</td><td>Accept, Accept, Revise</td></tr>
+              <tr><td class="mono">P-1029</td><td>A Survey of Federated Learning Privacy Techniques</td><td>5.5</td><td>Revise, Reject</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Record final decision</h2></div>
+          <div class="panel-body">
+            <form id="decisionForm" data-mock-submit="editor.php?action=record_decision">
+              <div class="field">
+                <label for="dPaper">Paper</label>
+                <select id="dPaper" name="paper_id" required>
+                  <option value="">Select a paper</option>
+                  <option value="P-1038">P-1038 — Efficient Query Optimization in Distributed Databases</option>
+                  <option value="P-1029">P-1029 — A Survey of Federated Learning Privacy Techniques</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="dStatus">Final status</label>
+                  <select id="dStatus" name="final_status" required>
+                    <option value="">Select</option>
+                    <option value="Accepted">Accepted</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Revision Required">Revision Required</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="dDate">Decision date</label>
+                  <input id="dDate" name="decision_date" type="date" data-default-today required>
+                </div>
+              </div>
+              <div class="field">
+                <label for="dRemarks">Remarks</label>
+                <input id="dRemarks" name="remarks" type="text" placeholder="Summary shown to the author" required>
+              </div>
+              <button class="btn-primary" type="submit">Record Decision</button>
+              <div class="form-msg"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= REVIEWERS ================= -->
+      <section class="dash-page" id="page-reviewers">
+        <div class="panel">
+          <div class="panel-head"><h2>Reviewer directory</h2></div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Reviewer ID</th><th>Name</th><th>Email</th><th>Expertise</th><th>Active assignments</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="mono">R-500</td><td>Dr. Farhana Islam</td><td>farhana@univ.edu</td><td>Databases</td><td>2</td></tr>
+              <tr><td class="mono">R-501</td><td>Dr. Rezwan Ahmed</td><td>rezwan@univ.edu</td><td>Machine Learning</td><td>1</td></tr>
+              <tr><td class="mono">R-502</td><td>Dr. Samiul Haque</td><td>samiul@univ.edu</td><td>Security</td><td>3</td></tr>
+              <tr><td class="mono">R-503</td><td>Dr. Tanvir Malik</td><td>tanvir@univ.edu</td><td>Human-Computer Interaction</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

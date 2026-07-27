@@ -1,5 +1,5 @@
 /* ============================================================
-   FOLIO — auth.js
+   RPRMS — auth.js
    Handles tab switching + login/register form submission.
    Currently talks to api/auth.php via fetch(). Until that file
    exists this will fail gracefully and just show a message —

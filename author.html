@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Author Dashboard — RPRMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-role="author">
+
+<div class="dash-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <p class="sb-brand-word">RPRMS</p>
+      <p class="sb-brand-role">Author Portal</p>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="sb-link active" data-page="dashboard" data-title="Dashboard"><span class="sb-icon">#</span>Dashboard</button>
+      <button class="sb-link" data-page="submit" data-title="Submit Paper"><span class="sb-icon">+</span>Submit Paper</button>
+      <button class="sb-link" data-page="papers" data-title="My Papers"><span class="sb-icon">≡</span>My Papers</button>
+    </nav>
+
+    <div class="sb-foot">
+      <button class="sb-signout">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="dash-main">
+    <div class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="topbar-user">
+        <span>Rahim Uddin</span>
+        <div class="avatar">RU</div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- ================= DASHBOARD ================= -->
+      <section class="dash-page active" id="page-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Total papers submitted</div></div>
+          <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Under review</div></div>
+          <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Accepted</div></div>
+          <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Rejected</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Recent submissions</h2>
+            <button class="btn-ghost" data-goto="papers">View all</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Paper ID</th><th>Title</th><th>Track</th><th>Status</th><th>Submitted</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">P-1042</td>
+                <td>Graph Neural Networks for Citation Prediction</td>
+                <td>Machine Learning</td>
+                <td><span class="badge badge-review">Under Review</span></td>
+                <td>2026-06-14</td>
+              </tr>
+              <tr>
+                <td class="mono">P-1038</td>
+                <td>Efficient Query Optimization in Distributed Databases</td>
+                <td>Databases</td>
+                <td><span class="badge badge-accepted">Accepted</span></td>
+                <td>2026-05-02</td>
+              </tr>
+              <tr>
+                <td class="mono">P-1029</td>
+                <td>A Survey of Federated Learning Privacy Techniques</td>
+                <td>Security</td>
+                <td><span class="badge badge-revision">Revision Required</span></td>
+                <td>2026-04-19</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= SUBMIT PAPER ================= -->
+      <section class="dash-page" id="page-submit">
+        <div class="panel">
+          <div class="panel-head"><h2>Submit a new paper</h2></div>
+          <div class="panel-body">
+            <form id="submitPaperForm" data-mock-submit="author.php?action=submit_paper">
+              <div class="field">
+                <label for="pTitle">Title</label>
+                <input id="pTitle" name="title" type="text" required>
+              </div>
+              <div class="field">
+                <label for="pAbstract">Abstract</label>
+                <input id="pAbstract" name="abstract" type="text" placeholder="Short summary of the paper" required>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="pTrack">Track</label>
+                  <select id="pTrack" name="track_id" required>
+                    <option value="">Select a track</option>
+                    <option value="1">Machine Learning</option>
+                    <option value="2">Databases</option>
+                    <option value="3">Security</option>
+                    <option value="4">Human-Computer Interaction</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="pPages">Page count</label>
+                  <input id="pPages" name="page_count" type="number" min="1" required>
+                </div>
+              </div>
+              <div class="field">
+                <label for="pCoauthors">Co-authors (optional)</label>
+                <input id="pCoauthors" name="coauthors" type="text" placeholder="Comma-separated names or emails">
+                <p class="hint">Matches the many-to-many Writes relationship — each name becomes a row in Paper_Author.</p>
+              </div>
+              <button class="btn-primary" type="submit">Submit Paper</button>
+              <div class="form-msg"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MY PAPERS ================= -->
+      <section class="dash-page" id="page-papers">
+        <div class="panel">
+          <div class="panel-head"><h2>All my papers</h2></div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Paper ID</th><th>Title</th><th>Track</th><th>Status</th><th>Submitted</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="mono">P-1042</td><td>Graph Neural Networks for Citation Prediction</td><td>Machine Learning</td><td><span class="badge badge-review">Under Review</span></td><td>2026-06-14</td></tr>
+              <tr><td class="mono">P-1038</td><td>Efficient Query Optimization in Distributed Databases</td><td>Databases</td><td><span class="badge badge-accepted">Accepted</span></td><td>2026-05-02</td></tr>
+              <tr><td class="mono">P-1029</td><td>A Survey of Federated Learning Privacy Techniques</td><td>Security</td><td><span class="badge badge-revision">Revision Required</span></td><td>2026-04-19</td></tr>
+              <tr><td class="mono">P-1017</td><td>Usable Consent Flows for Mobile Applications</td><td>Human-Computer Interaction</td><td><span class="badge badge-accepted">Accepted</span></td><td>2026-03-11</td></tr>
+              <tr><td class="mono">P-1005</td><td>Benchmarking Vector Search at Scale</td><td>Databases</td><td><span class="badge badge-rejected">Rejected</span></td><td>2026-02-08</td></tr>
+              <tr><td class="mono">P-0994</td><td>Attention Sparsity in Long-Context Transformers</td><td>Machine Learning</td><td><span class="badge badge-accepted">Accepted</span></td><td>2026-01-20</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>
