@@ -657,17 +657,181 @@ table.data-table {
 .badge-completed { background: #e4efe6; color: var(--success); }
 
 /* ---------- Form inside panel ---------- */
-.panel-body { padding: 20px; }
+
+.panel-body {
+  padding: 28px 30px 32px;
+}
+
+.panel-body form {
+  width: 100%;
+}
+
+.panel-body .field {
+  margin-bottom: 22px;
+}
+
+.panel-body .field input,
+.panel-body .field select {
+  padding: 13px 14px;
+  font-size: 14px;
+}
+
+.panel-body .field input[type="file"] {
+  padding: 10px 12px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.panel-body .field-row {
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.panel-body .btn-primary {
+  margin-top: 10px;
+  padding: 13px 0;
+}
 
 .hint {
   font-size: 12.5px;
   color: var(--muted);
-  margin: 4px 0 0;
+  margin: 5px 0 0;
+  line-height: 1.5;
+}
+
+
+/* ---------- Wider Author Submit Paper ---------- */
+
+#page-submit .panel {
+  width: 100%;
+}
+
+#page-submit .panel-body {
+  max-width: 1100px;
+}
+
+#page-submit .field input[type="text"],
+#page-submit .field input[type="number"],
+#page-submit .field input[type="file"],
+#page-submit .field select {
+  width: 100%;
+}
+
+
+/* ---------- File Upload ---------- */
+
+#pDocument {
+  border: 1px solid var(--paper-line);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ink-text);
+}
+
+#pDocument::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 14px;
+  border: 1px solid var(--paper-line);
+  border-radius: 6px;
+  background: var(--paper-2);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#pDocument::file-selector-button:hover {
+  background: var(--paper-line);
+}
+
+
+/* ---------- Responsive Submit Form ---------- */
+
+@media (max-width: 900px) {
+
+  .panel-body {
+    padding: 22px;
+  }
+
+  .panel-body .field-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+}
+
+
+/* ============================================================
+   FINAL FIX — MAKE DASHBOARD USE THE FULL SCREEN WIDTH
+   ============================================================ */
+
+.dash-shell {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+.dash-main {
+  width: 100%;
+  min-width: 0;
+}
+
+.dash-content {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+/* Author Submit Paper — full available content width */
+#page-submit {
+  width: 100%;
+  max-width: none;
+}
+
+#page-submit .panel {
+  width: 100%;
+  max-width: none;
+}
+
+#page-submit .panel-body {
+  width: 100%;
+  max-width: none;
+  padding: 30px 36px 40px;
+}
+
+#page-submit form {
+  width: 100%;
+  max-width: none;
+}
+
+#page-submit .field {
+  width: 100%;
+}
+
+#page-submit .field-row {
+  width: 100%;
+  grid-template-columns: 2fr 1fr;
+  gap: 22px;
+}
+
+#page-submit input,
+#page-submit select {
+  width: 100%;
+}
+
+#page-submit input[type="file"] {
+  width: 100%;
+}
+
+#page-submit .btn-primary {
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px 0;
 }
 
 @media (max-width: 900px) {
-  .dash-shell { grid-template-columns: 1fr; }
-  .sidebar { flex-direction: row; overflow-x: auto; }
-  .sb-nav { flex-direction: row; }
-  .topbar, .dash-content { padding-left: 20px; padding-right: 20px; }
+  #page-submit .field-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 }
