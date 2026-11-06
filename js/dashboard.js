@@ -22,7 +22,24 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  /* ============================================================
+     DEFAULT TODAY FOR DATE INPUTS
+     ============================================================ */
 
+  document
+    .querySelectorAll("input[data-default-today]")
+    .forEach((input) => {
+
+      if (!input.value) {
+
+        const today =
+          new Date().toISOString().split("T")[0];
+
+        input.value = today;
+
+      }
+
+    });
   /* ============================================================
      BASIC NAVIGATION
      ============================================================ */
@@ -114,7 +131,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (signOutButton) {
 
-    signOutButton.addEventListener("click", () => {
+    signOutButton.addEventListener("click", async () => {
+
+      sessionStorage.removeItem("rpms_user");
+      try {
+        await fetch("api/auth.php?action=logout");
+      } catch (e) {}
 
       window.location.href = "index.html";
 
@@ -201,12 +223,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ============================================================
-     TEMPORARY USER IDs
+     CURRENT USER SESSION & IDs
      ============================================================ */
 
-  const AUTHOR_ID = 2;
+  const savedUser = JSON.parse(sessionStorage.getItem("rpms_user") || "null");
 
-  const REVIEWER_ID = 2;
+  const AUTHOR_ID = (savedUser && savedUser.role === "author" && savedUser.role_id)
+    ? parseInt(savedUser.role_id)
+    : 2;
+
+  const REVIEWER_ID = (savedUser && savedUser.role === "reviewer" && savedUser.role_id)
+    ? parseInt(savedUser.role_id)
+    : 2;
+
+  // Update topbar display name and avatar
+  if (savedUser && savedUser.name) {
+    const userSpan = document.querySelector(".topbar-user span");
+    if (userSpan) {
+      userSpan.textContent = savedUser.name;
+    }
+    const avatar = document.querySelector(".topbar-user .avatar");
+    if (avatar) {
+      const parts = savedUser.name.trim().split(/\s+/);
+      const initials = parts.length > 1
+        ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+        : savedUser.name.substring(0, 2).toUpperCase();
+      avatar.textContent = initials;
+    }
+  }
 
 
 

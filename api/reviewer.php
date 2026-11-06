@@ -3,6 +3,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 header('Content-Type: application/json');
 
 require_once 'db.php';
@@ -24,7 +28,7 @@ $action = $_GET['action'] ?? '';
 
 if ($action === 'my_assignments') {
 
-    $reviewer_id = intval($_GET['reviewer_id'] ?? 2);
+    $reviewer_id = intval($_GET['reviewer_id'] ?? ($_SESSION['role_id'] ?? 2));
 
     if ($reviewer_id <= 0) {
 
@@ -183,7 +187,7 @@ if ($action === 'submit_review') {
        Temporary test reviewer
     */
 
-    $reviewer_id = 2;
+    $reviewer_id = intval($input['reviewer_id'] ?? ($_SESSION['role_id'] ?? 2));
 
 
 

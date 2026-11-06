@@ -6,6 +6,23 @@
    build api/auth.php + api/db.php next to make it live.
    ============================================================ */
 
+/* ── Eye / password toggle ── */
+document.querySelectorAll(".eye-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const targetId = btn.dataset.target;
+    const input = document.getElementById(targetId);
+    if (!input) return;
+
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+
+    const open   = btn.querySelector(".eye-open");
+    const closed = btn.querySelector(".eye-closed");
+    if (open)   open.style.display   = isHidden ? "none"  : "";
+    if (closed) closed.style.display = isHidden ? ""      : "none";
+  });
+});
+
 const tabButtons = document.querySelectorAll(".tab-btn");
 const panes = {
   login: document.getElementById("pane-login"),
@@ -38,7 +55,7 @@ tabButtons.forEach((btn) => {
 const loginForm = document.getElementById("loginForm");
 const loginMsg = document.getElementById("loginMsg");
 
-loginForm.addEventListener("submit", async (e) => {
+loginForm.addEventListener(\"submit\", async (e) => {
   e.preventDefault();
   loginMsg.textContent = "";
   loginMsg.classList.remove("success");
@@ -51,6 +68,11 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
+  const submitBtn = loginForm.querySelector("button[type=submit]");
+  const origText  = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Signing in…";
+
   try {
     const res = await fetch("api/auth.php?action=login", {
       method: "POST",
@@ -59,23 +81,31 @@ loginForm.addEventListener("submit", async (e) => {
     });
     const data = await res.json();
 
-    if (!res.ok || data.error) {
+    if (!res.ok || !data.success || data.error) {
       loginMsg.textContent = data.error || "Invalid username or password.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = origText;
       return;
     }
 
-    // Redirect based on role, same pattern as api/auth.php sets in $_SESSION
+    // Save user info in sessionStorage
+    if (data.user) {
+      sessionStorage.setItem("rpms_user", JSON.stringify(data.user));
+    }
+
+    // Redirect based on role
     const roleRedirects = {
       author: "author.html",
       reviewer: "reviewer.html",
       editor: "editor.html",
-      admin: "admin.html",
+      admin: "editor.html",
     };
-    window.location.href = roleRedirects[data.role] || "index.html";
+    window.location.href = roleRedirects[data.role] || "author.html";
 
   } catch (err) {
-    loginMsg.textContent =
-      "Backend not connected yet — build api/auth.php + api/db.php to make sign-in live.";
+    loginMsg.textContent = "Server connection failed. Please check that Apache is running.";
+    submitBtn.disabled = false;
+    submitBtn.textContent = origText;
   }
 });
 

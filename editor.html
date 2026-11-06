@@ -148,57 +148,154 @@
       </section>
 
       <!-- ================= DECISIONS ================= -->
-      <section class="dash-page" id="page-decisions">
-        <div class="panel">
-          <div class="panel-head"><h2>Papers awaiting a decision</h2></div>
-          <table class="data-table">
-            <thead>
-              <tr><th>Paper ID</th><th>Title</th><th>Avg. score</th><th>Recommendations</th></tr>
-            </thead>
-            <tbody>
-              <tr><td class="mono">P-1038</td><td>Efficient Query Optimization in Distributed Databases</td><td>8.3</td><td>Accept, Accept, Revise</td></tr>
-              <tr><td class="mono">P-1029</td><td>A Survey of Federated Learning Privacy Techniques</td><td>5.5</td><td>Revise, Reject</td></tr>
-            </tbody>
-          </table>
-        </div>
 
-        <div class="panel">
-          <div class="panel-head"><h2>Record final decision</h2></div>
-          <div class="panel-body">
-            <form id="decisionForm" data-mock-submit="editor.php?action=record_decision">
+          <section class="dash-page" id="page-decisions">
+
+            <!-- Recorded Decisions -->
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Recorded decisions</h2>
+              </div>
+
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Decision ID</th>
+                    <th>Paper ID</th>
+                    <th>Title</th>
+                    <th>Final Status</th>
+                    <th>Decision Date</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+
+                <tbody id="decisionsTableBody">
+                  <tr>
+                    <td colspan="6">Loading decisions...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+
+            <!-- Record Final Decision -->
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Record final decision</h2>
+              </div>
               <div class="field">
-                <label for="dPaper">Paper</label>
-                <select id="dPaper" name="paper_id" required>
-                  <option value="">Select a paper</option>
-                  <option value="P-1038">P-1038 — Efficient Query Optimization in Distributed Databases</option>
-                  <option value="P-1029">P-1029 — A Survey of Federated Learning Privacy Techniques</option>
-                </select>
+                    <label for="dPaper">Paper</label>
+
+                    <select
+                      id="dPaper"
+                      name="paper_id"
+                      required
+                    >
+                      <option value="">
+                        Loading papers...
+                      </option>
+                    </select>
+                  </div>
+
+
+                  <!-- Status + Date -->
+                  <div class="field-row">
+
+                    <div class="field">
+
+                      <label for="dStatus">
+                        Final status
+                      </label>
+
+                      <select
+                        id="dStatus"
+                        name="final_status"
+                        required
+                      >
+                        <option value="">
+                          Select
+                        </option>
+
+                        <option value="Accepted">
+                          Accepted
+                        </option>
+
+                        <option value="Rejected">
+                          Rejected
+                        </option>
+
+                        <option value="Minor Revision">
+                          Minor Revision
+                        </option>
+
+                        <option value="Major Revision">
+                          Major Revision
+                        </option>
+                      </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                      <label for="dDate">
+                        Decision date
+                      </label>
+
+                      <input
+                        id="dDate"
+                        name="decision_date"
+                        type="date"
+                        data-default-today
+                        required
+                      >
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- Remarks -->
+                  <div class="field">
+
+                    <label for="dRemarks">
+                      Remarks
+                    </label>
+
+                    <input
+                      id="dRemarks"
+                      name="remarks"
+                      type="text"
+                      maxlength="300"
+                      placeholder="Summary shown to the author"
+                      required
+                    >
+
+                  </div>
+
+
+                  <button
+                    id="recordDecisionBtn"
+                    class="btn-primary"
+                    type="button"
+                  >
+                    Record Decision
+                  </button>
+
+                  <div class="form-msg"></div>
+
+                </form>
+
               </div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="dStatus">Final status</label>
-                  <select id="dStatus" name="final_status" required>
-                    <option value="">Select</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Revision Required">Revision Required</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="dDate">Decision date</label>
-                  <input id="dDate" name="decision_date" type="date" data-default-today required>
-                </div>
-              </div>
-              <div class="field">
-                <label for="dRemarks">Remarks</label>
-                <input id="dRemarks" name="remarks" type="text" placeholder="Summary shown to the author" required>
-              </div>
-              <button class="btn-primary" type="submit">Record Decision</button>
-              <div class="form-msg"></div>
-            </form>
-          </div>
-        </div>
-      </section>
+            </div>
+
+          </section>
+              <div class="panel-body">
+
+                <form id="decisionForm">
+
+                  <!-- Paper -->
+   
 
       <!-- ================= REVIEWERS ================= -->
       <section class="dash-page" id="page-reviewers">

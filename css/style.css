@@ -303,6 +303,48 @@ input:focus-visible {
   transition: border-color 0.15s ease;
 }
 
+/* ── Eye toggle wrapper ── */
+.input-eye-wrap {
+  position: relative;
+  display: block;
+}
+
+.input-eye-wrap input {
+  padding-right: 44px !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: calc(100% - 2px);
+  width: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  transition: color 0.15s ease;
+  outline: none;
+}
+
+.eye-btn:hover {
+  color: var(--ink);
+}
+
+.eye-icon {
+  display: block;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
 .field input:focus,
 .field select:focus {
   border-color: var(--ink-3);

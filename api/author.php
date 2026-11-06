@@ -3,6 +3,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 header('Content-Type: application/json');
 
 require_once 'db.php';
@@ -18,12 +22,12 @@ $action = $_GET['action'] ?? '';
 
 if ($action === 'submit_paper') {
 
-    $input = json_decode(file_get_contents("php://input"), true);
+    $input = json_decode(file_get_contents("php://input"), true) ?: [];
 
-    $title = trim($input['title'] ?? '');
-    $abstract = trim($input['abstract'] ?? '');
-    $track_id = intval($input['track_id'] ?? 0);
-    $page_count = intval($input['page_count'] ?? 0);
+    $title = trim($input['title'] ?? ($_POST['title'] ?? ''));
+    $abstract = trim($input['abstract'] ?? ($_POST['abstract'] ?? ''));
+    $track_id = intval($input['track_id'] ?? ($_POST['track_id'] ?? 0));
+    $page_count = intval($input['page_count'] ?? ($_POST['page_count'] ?? 0));
 
     if (!$title || !$abstract || !$track_id || !$page_count) {
 
@@ -107,11 +111,12 @@ if ($action === 'submit_paper') {
 
     /* -----------------------------------------------
        Link paper with primary author
-
-       Temporary test author = AUTHOR_ID 2
        ----------------------------------------------- */
 
-    $author_id = 2;
+    $author_id = intval($input['author_id'] ?? ($_POST['author_id'] ?? ($_SESSION['role_id'] ?? 2)));
+    if ($author_id <= 0) {
+        $author_id = 2;
+    }
 
     $linkSql = "
         INSERT INTO AUTHOR_PAPER
@@ -156,6 +161,19 @@ if ($action === 'submit_paper') {
 
     oci_commit($conn);
 
+    // Save uploaded document to uploads directory if provided
+    if (isset($_FILES['paper_document']) && $_FILES['paper_document']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/../uploads/';
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+        $fileExt = strtolower(pathinfo($_FILES['paper_document']['name'], PATHINFO_EXTENSION));
+        $allowedExts = ['pdf', 'docx', 'doc'];
+        if (in_array($fileExt, $allowedExts)) {
+            $destFileName = 'paper_' . $paper_id . '_' . time() . '.' . $fileExt;
+            @move_uploaded_file($_FILES['paper_document']['tmp_name'], $uploadDir . $destFileName);
+        }
+    }
 
     echo json_encode([
         "success" => true,
@@ -179,7 +197,7 @@ if ($action === 'submit_paper') {
 
 if ($action === 'my_papers') {
 
-    $author_id = intval($_GET['author_id'] ?? 0);
+    $author_id = intval($_GET['author_id'] ?? ($_SESSION['role_id'] ?? 2));
 
     if ($author_id <= 0) {
 
