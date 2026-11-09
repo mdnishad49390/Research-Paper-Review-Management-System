@@ -685,3 +685,4 @@ if ($action === 'get_decisions') {
    DEFAULT
    ============================================================ */
 send_json(["success" => false, "error" => "Invalid admin action."]);
+
