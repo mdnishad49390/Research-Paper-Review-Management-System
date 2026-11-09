@@ -138,6 +138,77 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ---------------- Client-side Validation & Strength Meter ---------------- */
+  const regPassInput = document.getElementById("regPass");
+  const regPass2Input = document.getElementById("regPass2");
+  const strengthMeter = document.getElementById("passStrengthMeter");
+  const strengthBar = document.getElementById("strengthBar");
+  const strengthLabel = document.getElementById("strengthLabel");
+  const passMatchLabel = document.getElementById("passMatchLabel");
+
+  function evaluatePasswordStrength(password) {
+    let score = 0;
+    if (!password) return 0;
+    if (password.length >= 6) score += 1;
+    if (password.length >= 8) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+    return score;
+  }
+
+  if (regPassInput) {
+    regPassInput.addEventListener("input", () => {
+      const val = regPassInput.value;
+      if (!val) {
+        if (strengthMeter) strengthMeter.style.display = "none";
+        return;
+      }
+      if (strengthMeter) strengthMeter.style.display = "block";
+      const score = evaluatePasswordStrength(val);
+
+      if (score <= 2) {
+        strengthBar.style.width = "30%";
+        strengthBar.style.backgroundColor = "var(--crimson, #d32f2f)";
+        strengthLabel.textContent = "Weak password (use 8+ chars, numbers, uppercase)";
+        strengthLabel.style.color = "var(--crimson, #d32f2f)";
+      } else if (score <= 4) {
+        strengthBar.style.width = "65%";
+        strengthBar.style.backgroundColor = "#e67e22";
+        strengthLabel.textContent = "Moderate password";
+        strengthLabel.style.color = "#e67e22";
+      } else {
+        strengthBar.style.width = "100%";
+        strengthBar.style.backgroundColor = "var(--success, #2e7d32)";
+        strengthLabel.textContent = "Strong password";
+        strengthLabel.style.color = "var(--success, #2e7d32)";
+      }
+
+      checkMatch();
+    });
+  }
+
+  function checkMatch() {
+    if (!regPass2Input || !passMatchLabel) return;
+    const p1 = regPassInput ? regPassInput.value : "";
+    const p2 = regPass2Input.value;
+    if (!p2) {
+      passMatchLabel.textContent = "";
+      return;
+    }
+    if (p1 === p2) {
+      passMatchLabel.textContent = "✓ Passwords match";
+      passMatchLabel.style.color = "var(--success, #2e7d32)";
+    } else {
+      passMatchLabel.textContent = "✗ Passwords do not match";
+      passMatchLabel.style.color = "var(--crimson, #d32f2f)";
+    }
+  }
+
+  if (regPass2Input) {
+    regPass2Input.addEventListener("input", checkMatch);
+  }
+
   /* ---------------- Register (Author) ---------------- */
   const registerForm = document.getElementById("registerForm");
   const registerMsg = document.getElementById("registerMsg");

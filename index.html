@@ -121,6 +121,13 @@
                   </svg>
                 </button>
               </div>
+              <!-- Password strength meter -->
+              <div class="strength-meter" id="passStrengthMeter" style="margin-top: 6px; display: none;">
+                <div style="height: 4px; background: #e0e0e0; border-radius: 2px; overflow: hidden;">
+                  <div id="strengthBar" style="height: 100%; width: 0%; transition: all 0.3s; background: red;"></div>
+                </div>
+                <div id="strengthLabel" style="font-size: 11px; margin-top: 3px; font-weight: 500; color: var(--muted);"></div>
+              </div>
             </div>
             <div class="field">
               <label for="regPass2">Confirm password</label>
@@ -137,6 +144,7 @@
                   </svg>
                 </button>
               </div>
+              <div id="passMatchLabel" style="font-size: 11px; margin-top: 3px; font-weight: 500;"></div>
             </div>
           </div>
           <button class="btn-primary" type="submit">Create Author Account</button>

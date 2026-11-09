@@ -264,6 +264,31 @@ if ($action === 'register') {
         exit;
     }
 
+    // Input sanitization & validation
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode([
+            "success" => false,
+            "error" => "Please provide a valid email address."
+        ]);
+        exit;
+    }
+
+    if (strlen($username) < 3 || !preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+        echo json_encode([
+            "success" => false,
+            "error" => "Username must be at least 3 characters and contain only letters, numbers, or underscores."
+        ]);
+        exit;
+    }
+
+    if (strlen($password) < 6) {
+        echo json_encode([
+            "success" => false,
+            "error" => "Password must be at least 6 characters long."
+        ]);
+        exit;
+    }
+
     $conn = get_db_connection(true);
 
     if (!$conn) {
