@@ -315,6 +315,12 @@ input:focus-visible {
   box-sizing: border-box;
 }
 
+/* Hide Microsoft Edge / IE default eye icon */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
 .eye-btn {
   position: absolute;
   right: 1px;
@@ -333,16 +339,15 @@ input:focus-visible {
   padding: 0;
   transition: color 0.15s ease;
   outline: none;
+  z-index: 10;
 }
 
 .eye-btn:hover {
   color: var(--ink);
 }
 
-.eye-icon {
-  display: block;
+.eye-btn svg {
   pointer-events: none;
-  flex-shrink: 0;
 }
 
 .field input:focus,

@@ -3,6 +3,23 @@
    Handles tab switching + login/register form submission + eye toggle.
    ============================================================ */
 
+/* Global eye toggle function for direct onclick support */
+function togglePasswordVisibility(targetId, btn) {
+  const input = document.getElementById(targetId);
+  if (!input) return;
+
+  const isPassword = input.type === "password";
+  input.type = isPassword ? "text" : "password";
+
+  const openIcon = btn.querySelector(".eye-open");
+  const closedIcon = btn.querySelector(".eye-closed");
+
+  if (openIcon) openIcon.style.display = isPassword ? "none" : "block";
+  if (closedIcon) closedIcon.style.display = isPassword ? "block" : "none";
+
+  input.focus();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
   /* ── Eye / password toggle ── */
