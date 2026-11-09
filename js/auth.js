@@ -81,59 +81,107 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------------- Sign in ---------------- */
   const loginForm = document.getElementById("loginForm");
   const loginMsg = document.getElementById("loginMsg");
+  const loginAlert = document.getElementById("loginAlert");
+
+  function showLoginAlert(msg, isSuccess = false) {
+    if (loginAlert) {
+      loginAlert.textContent = msg;
+      loginAlert.className = isSuccess ? "auth-alert success" : "auth-alert error";
+      loginAlert.style.display = "flex";
+    }
+    if (loginMsg) {
+      loginMsg.textContent = msg;
+      loginMsg.className = isSuccess ? "form-msg success" : "form-msg";
+    }
+  }
+
+  function clearLoginAlert() {
+    if (loginAlert) {
+      loginAlert.textContent = "";
+      loginAlert.style.display = "none";
+    }
+    if (loginMsg) {
+      loginMsg.textContent = "";
+      loginMsg.classList.remove("success");
+    }
+  }
 
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      loginMsg.textContent = "";
-      loginMsg.classList.remove("success");
+      clearLoginAlert();
 
       const username = document.getElementById("loginUser").value.trim();
       const password = document.getElementById("loginPass").value;
 
       if (!username || !password) {
-        loginMsg.textContent = "Enter your username and password.";
+        showLoginAlert("Please enter both your username and password.");
         return;
       }
 
       const submitBtn = loginForm.querySelector("button[type=submit]");
-      const origText  = submitBtn.textContent;
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Signing in…";
+      const origText  = submitBtn ? submitBtn.textContent : "Sign In";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Signing in…";
+      }
 
       try {
         const res = await fetch("api/auth.php?action=login", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
           body: JSON.stringify({ username, password }),
         });
-        const data = await res.json();
 
-        if (!res.ok || !data.success || data.error) {
-          loginMsg.textContent = data.error || "Invalid username or password.";
-          submitBtn.disabled = false;
-          submitBtn.textContent = origText;
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (jsonErr) {
+          throw new Error("Server returned an invalid response. Please verify Apache/PHP logs.");
+        }
+
+        // Check if backend returned error or non-success
+        if (!res.ok || data.status === "error" || data.success === false || data.error) {
+          const errMsg = data.message || data.error || "Invalid credentials. Please try again.";
+          showLoginAlert(errMsg, false);
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = origText;
+          }
           return;
         }
+
+        // Successful authentication
+        showLoginAlert("Sign in successful! Redirecting to your dashboard...", true);
 
         // Save user info in sessionStorage
         if (data.user) {
           sessionStorage.setItem("rpms_user", JSON.stringify(data.user));
         }
 
-        // Redirect based on role
+        // Role-based destination matrix
         const roleRedirects = {
           author: "author.html",
           reviewer: "reviewer.html",
           editor: "editor.html",
           admin: "admin.html",
         };
-        window.location.href = roleRedirects[data.role] || "author.html";
+
+        const targetPage = roleRedirects[data.role] || "author.html";
+        setTimeout(() => {
+          window.location.href = targetPage;
+        }, 500);
 
       } catch (err) {
-        loginMsg.textContent = "Server connection failed. Please check that Apache is running.";
-        submitBtn.disabled = false;
-        submitBtn.textContent = origText;
+        console.error("Login submission error:", err);
+        showLoginAlert("Connection error: " + err.message + ". Please verify XAMPP Apache is running.", false);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = origText;
+        }
       }
     });
   }
@@ -248,9 +296,18 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        registerMsg.textContent = "Account created — you can sign in now.";
+        registerMsg.textContent = data.message || "Account created successfully! Redirecting...";
         registerMsg.classList.add("success");
         registerForm.reset();
+
+        // Save session if returned and redirect directly to author dashboard
+        if (data.user) {
+          sessionStorage.setItem("rpms_user", JSON.stringify(data.user));
+        }
+
+        setTimeout(() => {
+          window.location.href = "author.html";
+        }, 1200);
 
       } catch (err) {
         registerMsg.textContent =

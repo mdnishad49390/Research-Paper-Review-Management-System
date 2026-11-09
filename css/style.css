@@ -379,6 +379,36 @@ input::-ms-clear {
 
 .btn-primary:hover { background: var(--ink-2); }
 
+/* ---------- Auth Alert Box ---------- */
+.auth-alert {
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: alertFadeIn 0.2s ease-in-out;
+}
+
+.auth-alert.error {
+  background: #fdf2f2;
+  color: var(--crimson-dark, #832e28);
+  border: 1px solid #f8b4b4;
+}
+
+.auth-alert.success {
+  background: #f3faf7;
+  color: #1e7e34;
+  border: 1px solid #c3e6cb;
+}
+
+@keyframes alertFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .form-msg {
   margin-top: 14px;
   font-size: 13px;

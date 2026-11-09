@@ -146,8 +146,10 @@ if ($action === 'login') {
 
     if (!$username || !$password) {
         echo json_encode([
+            "status" => "error",
             "success" => false,
-            "error" => "Username and password are required."
+            "error" => "Username and password are required.",
+            "message" => "Username and password are required."
         ]);
         exit;
     }
@@ -189,6 +191,7 @@ if ($action === 'login') {
                     $_SESSION['name'] = $row['FULL_NAME'];
 
                     echo json_encode([
+                        "status" => "success",
                         "success" => true,
                         "role" => $role,
                         "user" => $userSession
@@ -196,6 +199,16 @@ if ($action === 'login') {
 
                     oci_free_statement($stmt);
                     oci_close($conn);
+                    exit;
+                } else {
+                    oci_free_statement($stmt);
+                    oci_close($conn);
+                    echo json_encode([
+                        "status" => "error",
+                        "success" => false,
+                        "error" => "Incorrect password. Please try again.",
+                        "message" => "Incorrect password. Please try again."
+                    ]);
                     exit;
                 }
             }
@@ -208,8 +221,11 @@ if ($action === 'login') {
 
     // Check Fallback Default Users
     $lowerUser = strtolower($username);
+    $userMatched = false;
+
     foreach ($defaultUsers as $key => $def) {
         if ($key === $lowerUser || strtolower($def['email']) === $lowerUser) {
+            $userMatched = true;
             if (in_array($password, $def['passwords'])) {
                 $role = $def['role'];
                 $userSession = [
@@ -227,9 +243,18 @@ if ($action === 'login') {
                 $_SESSION['name'] = $def['name'];
 
                 echo json_encode([
+                    "status" => "success",
                     "success" => true,
                     "role" => $role,
                     "user" => $userSession
+                ]);
+                exit;
+            } else {
+                echo json_encode([
+                    "status" => "error",
+                    "success" => false,
+                    "error" => "Incorrect password. Please try again.",
+                    "message" => "Incorrect password. Please try again."
                 ]);
                 exit;
             }
@@ -237,8 +262,10 @@ if ($action === 'login') {
     }
 
     echo json_encode([
+        "status" => "error",
         "success" => false,
-        "error" => "Invalid username or password."
+        "error" => "Account not found. If you are an Author, please register. Reviewers & Editors must be added by an Administrator.",
+        "message" => "Account not found. If you are an Author, please register. Reviewers & Editors must be added by an Administrator."
     ]);
     exit;
 }
@@ -302,18 +329,19 @@ if ($action === 'register') {
     ensure_app_user_table($conn);
 
     // Check whether email or username exists in APP_USER
-    $checkSql = "SELECT USER_ID FROM APP_USER WHERE LOWER(USERNAME) = LOWER(:u) OR LOWER(EMAIL) = LOWER(:e)";
+    $checkSql = "SELECT USER_ID, USERNAME, EMAIL FROM APP_USER WHERE LOWER(USERNAME) = LOWER(:u) OR LOWER(EMAIL) = LOWER(:e)";
     $checkStmt = oci_parse($conn, $checkSql);
     oci_bind_by_name($checkStmt, ":u", $username);
     oci_bind_by_name($checkStmt, ":e", $email);
     oci_execute($checkStmt);
 
-    if (oci_fetch($checkStmt)) {
+    if ($existingRow = oci_fetch_assoc($checkStmt)) {
+        $isEmailDup = strtolower($existingRow['EMAIL']) === strtolower($email);
         oci_free_statement($checkStmt);
         oci_close($conn);
         echo json_encode([
             "success" => false,
-            "error" => "Username or Email is already registered."
+            "error" => $isEmailDup ? "Email is already registered. Please sign in or use another email." : "Username is already taken. Please choose another username."
         ]);
         exit;
     }
@@ -376,11 +404,28 @@ if ($action === 'register') {
     }
 
     oci_commit($conn);
+
+    // Auto-login session for the newly registered author
+    $userSession = [
+        'id' => (int)($author_id ?: 2),
+        'username' => $username,
+        'name' => $name,
+        'email' => $email,
+        'role' => 'author',
+        'role_id' => (int)$author_id
+    ];
+    $_SESSION['user'] = $userSession;
+    $_SESSION['role'] = 'author';
+    $_SESSION['role_id'] = (int)$author_id;
+    $_SESSION['name'] = $name;
+
     oci_close($conn);
 
     echo json_encode([
         "success" => true,
-        "message" => "Author account created successfully! You can now sign in."
+        "role" => "author",
+        "user" => $userSession,
+        "message" => "Author account created successfully! Redirecting to dashboard..."
     ]);
     exit;
 }
