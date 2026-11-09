@@ -62,6 +62,14 @@ $defaultUsers = [
         'email' => 'junaed@rpms.local',
         'role' => 'editor',
         'role_id' => 1
+    ],
+    'admin' => [
+        'username' => 'admin',
+        'passwords' => ['password123', 'admin123'],
+        'name' => 'System Administrator',
+        'email' => 'admin@rpms.local',
+        'role' => 'admin',
+        'role_id' => 1
     ]
 ];
 
@@ -104,7 +112,8 @@ function ensure_app_user_table($conn)
         $seedUsers = [
             [1, 'author', password_hash('password123', PASSWORD_DEFAULT), 'Rahim Ahmed', 'rahim@rpms.local', 'author', 2],
             [2, 'reviewer', password_hash('password123', PASSWORD_DEFAULT), 'Dr. Farhana Islam', 'farhana@rpms.local', 'reviewer', 2],
-            [3, 'editor', password_hash('password123', PASSWORD_DEFAULT), 'Prof. Junaed Ahmed', 'junaed@rpms.local', 'editor', 1]
+            [3, 'editor', password_hash('password123', PASSWORD_DEFAULT), 'Prof. Junaed Ahmed', 'junaed@rpms.local', 'editor', 1],
+            [4, 'admin', password_hash('password123', PASSWORD_DEFAULT), 'System Administrator', 'admin@rpms.local', 'admin', 1]
         ];
 
         foreach ($seedUsers as $u) {

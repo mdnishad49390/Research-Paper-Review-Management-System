@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Portal — RPRMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-role="admin">
+
+<div class="dash-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <p class="sb-brand-word">RPRMS</p>
+      <p class="sb-brand-role">System Admin</p>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="sb-link active" data-page="overview" data-title="System Overview"><span class="sb-icon">#</span>Overview</button>
+      <p class="sb-section-label">Management</p>
+      <button class="sb-link" data-page="users" data-title="User Accounts"><span class="sb-icon">👥</span>Users</button>
+      <button class="sb-link" data-page="papers" data-title="Manage Papers"><span class="sb-icon">📄</span>All Papers</button>
+      <button class="sb-link" data-page="tracks" data-title="Manage Tracks"><span class="sb-icon">🏷️</span>Tracks</button>
+      <button class="sb-link" data-page="reviewers" data-title="Reviewer Pool"><span class="sb-icon">🎓</span>Reviewers</button>
+      <p class="sb-section-label">Audit & Logs</p>
+      <button class="sb-link" data-page="reviews" data-title="All Reviews"><span class="sb-icon">✍️</span>Reviews</button>
+      <button class="sb-link" data-page="decisions" data-title="Final Decisions"><span class="sb-icon">⚖️</span>Decisions</button>
+    </nav>
+
+    <div class="sb-foot">
+      <button class="sb-signout">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="dash-main">
+    <div class="topbar">
+      <h1 id="pageTitle">System Overview</h1>
+      <div class="topbar-user">
+        <span>System Administrator</span>
+        <div class="avatar">SA</div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- ================= OVERVIEW PAGE ================= -->
+      <section class="dash-page active" id="page-overview">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="statUsers">0</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statPapers">0</div>
+            <div class="stat-label">Total Papers</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statReviews">0</div>
+            <div class="stat-label">Reviews Done</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statTracks">0</div>
+            <div class="stat-label">Research Tracks</div>
+          </div>
+        </div>
+
+        <div class="stat-grid" style="margin-top: -10px;">
+          <div class="stat-card">
+            <div class="stat-num" id="statReviewers">0</div>
+            <div class="stat-label">Reviewers</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statAuthors">0</div>
+            <div class="stat-label">Authors</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statPendingDecisions">0</div>
+            <div class="stat-label">Pending Decisions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statAcceptedPapers">0</div>
+            <div class="stat-label">Accepted Papers</div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Quick Control Center</h2>
+          </div>
+          <div class="panel-body">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn-primary" style="width: auto; padding: 10px 18px;" data-goto="users">+ Add New User</button>
+              <button class="btn-primary" style="width: auto; padding: 10px 18px;" data-goto="tracks">+ Add Research Track</button>
+              <button class="btn-primary" style="width: auto; padding: 10px 18px;" data-goto="reviewers">+ Add Reviewer</button>
+              <button class="btn-ghost" style="width: auto; padding: 10px 18px;" data-goto="papers">View All Papers</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= USERS PAGE ================= -->
+      <section class="dash-page" id="page-users">
+        <!-- Create user form -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Create New User Account</h2>
+          </div>
+          <div class="panel-body">
+            <form id="createUserForm">
+              <div class="field-row">
+                <div class="field">
+                  <label for="uFullName">Full Name *</label>
+                  <input id="uFullName" name="full_name" type="text" placeholder="e.g. Dr. Alex Morgan" required>
+                </div>
+                <div class="field">
+                  <label for="uEmail">Email Address *</label>
+                  <input id="uEmail" name="email" type="email" placeholder="e.g. alex@university.edu" required>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="uUsername">Username *</label>
+                  <input id="uUsername" name="username" type="text" placeholder="e.g. amorgan" required>
+                </div>
+                <div class="field">
+                  <label for="uPassword">Password *</label>
+                  <input id="uPassword" name="password" type="text" placeholder="e.g. password123" required>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="uRole">Account Role *</label>
+                <select id="uRole" name="role" required>
+                  <option value="author">Author (Submits papers)</option>
+                  <option value="reviewer">Reviewer (Evaluates manuscripts)</option>
+                  <option value="editor">Editor (Assigns reviewers & makes decisions)</option>
+                  <option value="admin">Admin (Full system control)</option>
+                </select>
+              </div>
+
+              <button class="btn-primary" style="width: auto; padding: 11px 24px;" type="submit">Create User Account</button>
+              <div class="form-msg" id="createUserMsg"></div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Registered Users (<span id="userCount">0</span>)</h2>
+            <button class="btn-ghost" id="refreshUsersBtn">Refresh</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Role ID</th>
+                <th>Created</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="8">Loading users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= PAPERS PAGE ================= -->
+      <section class="dash-page" id="page-papers">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>All Submitted Papers (<span id="paperCount">0</span>)</h2>
+            <button class="btn-ghost" id="refreshPapersBtn">Refresh</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Track</th>
+                <th>Pages</th>
+                <th>Status</th>
+                <th>Assigned Reviews</th>
+                <th>Change Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminPapersTableBody">
+              <tr><td colspan="9">Loading papers...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TRACKS PAGE ================= -->
+      <section class="dash-page" id="page-tracks">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Add Research Track</h2>
+          </div>
+          <div class="panel-body">
+            <form id="createTrackForm">
+              <div class="field-row" style="align-items: flex-end;">
+                <div class="field" style="margin-bottom: 0;">
+                  <label for="trackName">Track Name *</label>
+                  <input id="trackName" name="track_name" type="text" placeholder="e.g. Quantum Computing" required>
+                </div>
+                <button class="btn-primary" style="width: auto; padding: 11px 24px; height: 43px;" type="submit">Add Track</button>
+              </div>
+              <div class="form-msg" id="createTrackMsg"></div>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Existing Tracks</h2>
+            <button class="btn-ghost" id="refreshTracksBtn">Refresh</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Track ID</th>
+                <th>Track Name</th>
+                <th>Papers in Track</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tracksTableBody">
+              <tr><td colspan="4">Loading tracks...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= REVIEWERS PAGE ================= -->
+      <section class="dash-page" id="page-reviewers">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Add Reviewer to Pool</h2>
+          </div>
+          <div class="panel-body">
+            <form id="createReviewerForm">
+              <div class="field-row">
+                <div class="field">
+                  <label for="revName">Reviewer Name *</label>
+                  <input id="revName" name="name" type="text" placeholder="e.g. Prof. Alan Turing" required>
+                </div>
+                <div class="field">
+                  <label for="revEmail">Email *</label>
+                  <input id="revEmail" name="email" type="email" placeholder="e.g. turing@cambridge.edu" required>
+                </div>
+              </div>
+              <div class="field">
+                <label for="revExp">Expertise / Domain *</label>
+                <input id="revExp" name="expertise" type="text" placeholder="e.g. Cryptography, Distributed Systems, AI" required>
+              </div>
+              <button class="btn-primary" style="width: auto; padding: 11px 24px;" type="submit">Add Reviewer</button>
+              <div class="form-msg" id="createReviewerMsg"></div>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Reviewer Directory</h2>
+            <button class="btn-ghost" id="refreshReviewersBtn">Refresh</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Expertise</th>
+                <th>Active Assignments</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminReviewersTableBody">
+              <tr><td colspan="6">Loading reviewers...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= REVIEWS PAGE ================= -->
+      <section class="dash-page" id="page-reviews">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Submitted Manuscript Reviews</h2>
+            <button class="btn-ghost" id="refreshReviewsBtn">Refresh</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Review ID</th>
+                <th>Paper</th>
+                <th>Reviewer</th>
+                <th>Score</th>
+                <th>Recommendation</th>
+                <th>Comments</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="adminReviewsTableBody">
+              <tr><td colspan="7">Loading reviews...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= DECISIONS PAGE ================= -->
+      <section class="dash-page" id="page-decisions">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Final Editorial Decisions</h2>
+            <button class="btn-ghost" id="refreshDecisionsBtn">Refresh</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Decision ID</th>
+                <th>Paper</th>
+                <th>Final Status</th>
+                <th>Decision Date</th>
+                <th>Remarks</th>
+                <th>Editor ID</th>
+              </tr>
+            </thead>
+            <tbody id="adminDecisionsTableBody">
+              <tr><td colspan="6">Loading decisions...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

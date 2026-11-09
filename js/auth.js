@@ -98,7 +98,7 @@ loginForm.addEventListener(\"submit\", async (e) => {
       author: "author.html",
       reviewer: "reviewer.html",
       editor: "editor.html",
-      admin: "editor.html",
+      admin: "admin.html",
     };
     window.location.href = roleRedirects[data.role] || "author.html";
 
