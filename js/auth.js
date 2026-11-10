@@ -1,319 +1,270 @@
 /* ============================================================
-   RPRMS — auth.js
-   Handles tab switching + login/register form submission + eye toggle.
+   RPRMS — auth.js  (v3 — fully rewritten, no inline onclick needed)
    ============================================================ */
 
-/* Global eye toggle function for direct onclick support */
+/* ── 1. Password visibility toggle ── */
 function togglePasswordVisibility(targetId, btn) {
-  const input = document.getElementById(targetId);
+  var input = document.getElementById(targetId);
   if (!input) return;
 
-  const isPassword = input.type === "password";
-  input.type = isPassword ? "text" : "password";
+  var nowVisible = (input.type === 'text');
+  input.type = nowVisible ? 'password' : 'text';
 
-  const openIcon = btn.querySelector(".eye-open");
-  const closedIcon = btn.querySelector(".eye-closed");
-
-  if (openIcon) openIcon.style.display = isPassword ? "none" : "block";
-  if (closedIcon) closedIcon.style.display = isPassword ? "block" : "none";
+  var openIcon   = btn.querySelector('.eye-open');
+  var closedIcon = btn.querySelector('.eye-closed');
+  if (openIcon)   openIcon.style.display   = nowVisible ? 'inline' : 'none';
+  if (closedIcon) closedIcon.style.display = nowVisible ? 'none'   : 'inline';
 
   input.focus();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+/* ── 2. Alert helpers ── */
+function showAlert(boxId, msg, isSuccess) {
+  var box = document.getElementById(boxId);
+  if (!box) return;
+  box.textContent  = msg;
+  box.className    = 'auth-alert ' + (isSuccess ? 'success' : 'error');
+  box.style.display = 'flex';
+}
 
-  /* ── Eye / password toggle ── */
-  document.querySelectorAll(".eye-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+function clearAlert(boxId) {
+  var box = document.getElementById(boxId);
+  if (!box) return;
+  box.textContent   = '';
+  box.style.display = 'none';
+  box.className     = 'auth-alert';
+}
 
-      const targetId = btn.dataset.target;
-      const input = document.getElementById(targetId);
-      if (!input) return;
+/* ── 3. All logic after DOM is ready ── */
+document.addEventListener('DOMContentLoaded', function () {
 
-      const isPassword = input.getAttribute("type") === "password";
-      input.setAttribute("type", isPassword ? "text" : "password");
+  /* ── 3a. Eye-toggle buttons via event delegation ── */
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.eye-btn');
+    if (!btn) return;
 
-      const openIcon   = btn.querySelector(".eye-open");
-      const closedIcon = btn.querySelector(".eye-closed");
+    /* Stop form submission */
+    e.preventDefault();
+    e.stopPropagation();
 
-      if (openIcon) {
-        openIcon.style.display = isPassword ? "none" : "block";
-      }
-      if (closedIcon) {
-        closedIcon.style.display = isPassword ? "block" : "none";
-      }
+    /* Get targetId from onclick attr or data-target */
+    /* We rely on onclick attr so this is a safety net */
+    var wrap  = btn.closest('.input-eye-wrap');
+    if (!wrap) return;
+    var input = wrap.querySelector('input');
+    if (!input) return;
 
-      // Keep focus on input for smooth typing
-      input.focus();
+    var nowVisible = (input.type === 'text');
+    input.type = nowVisible ? 'password' : 'text';
+
+    var openIcon   = btn.querySelector('.eye-open');
+    var closedIcon = btn.querySelector('.eye-closed');
+    if (openIcon)   openIcon.style.display   = nowVisible ? 'inline' : 'none';
+    if (closedIcon) closedIcon.style.display = nowVisible ? 'none'   : 'inline';
+
+    input.focus();
+  });
+
+  /* ── 3b. Tab switching ── */
+  var tabButtons = document.querySelectorAll('.tab-btn');
+  var paneLogin    = document.getElementById('pane-login');
+  var paneRegister = document.getElementById('pane-register');
+  var formTitle    = document.getElementById('formTitle');
+  var formSub      = document.getElementById('formSub');
+
+  tabButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var tab = btn.getAttribute('data-tab');
+
+      tabButtons.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      if (paneLogin)    paneLogin.classList.toggle('active',    tab === 'login');
+      if (paneRegister) paneRegister.classList.toggle('active', tab === 'register');
+
+      if (formTitle) formTitle.textContent = tab === 'login' ? 'Sign in' : 'Create an author account';
+      if (formSub)   formSub.textContent   = tab === 'login'
+        ? 'Enter your credentials to access your dashboard.'
+        : 'Register to submit papers for review.';
+
+      clearAlert('loginAlert');
+      clearAlert('registerAlert');
     });
   });
 
-  const tabButtons = document.querySelectorAll(".tab-btn");
-  const panes = {
-    login: document.getElementById("pane-login"),
-    register: document.getElementById("pane-register"),
-  };
-  const formTitle = document.getElementById("formTitle");
-  const formSub = document.getElementById("formSub");
-
-  const titles = {
-    login: ["Sign in", "Enter your credentials to access your dashboard."],
-    register: ["Create an author account", "Register to submit papers for review."],
-  };
-
-  tabButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const tab = btn.dataset.tab;
-
-      tabButtons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      Object.values(panes).forEach((p) => p.classList.remove("active"));
-      panes[tab].classList.add("active");
-
-      formTitle.textContent = titles[tab][0];
-      formSub.textContent = titles[tab][1];
-    });
-  });
-
-  /* ---------------- Sign in ---------------- */
-  const loginForm = document.getElementById("loginForm");
-  const loginMsg = document.getElementById("loginMsg");
-  const loginAlert = document.getElementById("loginAlert");
-
-  function showLoginAlert(msg, isSuccess = false) {
-    if (loginAlert) {
-      loginAlert.textContent = msg;
-      loginAlert.className = isSuccess ? "auth-alert success" : "auth-alert error";
-      loginAlert.style.display = "flex";
-    }
-    if (loginMsg) {
-      loginMsg.textContent = msg;
-      loginMsg.className = isSuccess ? "form-msg success" : "form-msg";
-    }
-  }
-
-  function clearLoginAlert() {
-    if (loginAlert) {
-      loginAlert.textContent = "";
-      loginAlert.style.display = "none";
-    }
-    if (loginMsg) {
-      loginMsg.textContent = "";
-      loginMsg.classList.remove("success");
-    }
-  }
+  /* ── 3c. LOGIN form ── */
+  var loginForm = document.getElementById('loginForm');
 
   if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearLoginAlert();
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault();   /* ← MUST stop GET submit */
+      clearAlert('loginAlert');
 
-      const username = document.getElementById("loginUser").value.trim();
-      const password = document.getElementById("loginPass").value;
+      var username = (document.getElementById('loginUser').value || '').trim();
+      var password = document.getElementById('loginPass').value || '';
 
       if (!username || !password) {
-        showLoginAlert("Please enter both your username and password.");
+        showAlert('loginAlert', 'Please enter both your username and password.', false);
         return;
       }
 
-      const submitBtn = loginForm.querySelector("button[type=submit]");
-      const origText  = submitBtn ? submitBtn.textContent : "Sign In";
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Signing in…";
-      }
+      var submitBtn = loginForm.querySelector('button[type="submit"]');
+      var origText  = submitBtn ? submitBtn.textContent : 'Sign In';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Signing in…'; }
 
-      try {
-        const res = await fetch("api/auth.php?action=login", {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({ username, password }),
+      fetch('api/auth.php?action=login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    JSON.stringify({ username: username, password: password })
+      })
+      .then(function (res) {
+        return res.json().then(function (data) {
+          return { ok: res.ok, data: data };
         });
+      })
+      .then(function (result) {
+        var ok   = result.ok;
+        var data = result.data;
 
-        let data = {};
-        try {
-          data = await res.json();
-        } catch (jsonErr) {
-          throw new Error("Server returned an invalid response. Please verify Apache/PHP logs.");
-        }
-
-        // Check if backend returned error or non-success
-        if (!res.ok || data.status === "error" || data.success === false || data.error) {
-          const errMsg = data.message || data.error || "Invalid credentials. Please try again.";
-          showLoginAlert(errMsg, false);
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = origText;
-          }
+        if (!ok || data.status === 'error' || data.success === false) {
+          var errMsg = data.message || data.error || 'Invalid credentials. Please try again.';
+          showAlert('loginAlert', errMsg, false);
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
           return;
         }
 
-        // Successful authentication
-        showLoginAlert("Sign in successful! Redirecting to your dashboard...", true);
+        /* Success */
+        showAlert('loginAlert', 'Sign in successful! Redirecting…', true);
+        if (data.user) sessionStorage.setItem('rpms_user', JSON.stringify(data.user));
 
-        // Save user info in sessionStorage
-        if (data.user) {
-          sessionStorage.setItem("rpms_user", JSON.stringify(data.user));
-        }
-
-        // Role-based destination matrix
-        const roleRedirects = {
-          author: "author.html",
-          reviewer: "reviewer.html",
-          editor: "editor.html",
-          admin: "admin.html",
-        };
-
-        const targetPage = roleRedirects[data.role] || "author.html";
-        setTimeout(() => {
-          window.location.href = targetPage;
-        }, 500);
-
-      } catch (err) {
-        console.error("Login submission error:", err);
-        showLoginAlert("Connection error: " + err.message + ". Please verify XAMPP Apache is running.", false);
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = origText;
-        }
-      }
+        var redirects = { author: 'author.html', reviewer: 'reviewer.html', editor: 'editor.html', admin: 'admin.html' };
+        var target    = redirects[data.role] || 'author.html';
+        setTimeout(function () { window.location.href = target; }, 500);
+      })
+      .catch(function (err) {
+        showAlert('loginAlert', 'Connection error: ' + err.message + '. Is XAMPP running?', false);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
+      });
     });
   }
 
-  /* ---------------- Client-side Validation & Strength Meter ---------------- */
-  const regPassInput = document.getElementById("regPass");
-  const regPass2Input = document.getElementById("regPass2");
-  const strengthMeter = document.getElementById("passStrengthMeter");
-  const strengthBar = document.getElementById("strengthBar");
-  const strengthLabel = document.getElementById("strengthLabel");
-  const passMatchLabel = document.getElementById("passMatchLabel");
+  /* ── 3d. Password strength + confirm match ── */
+  var regPassInput  = document.getElementById('regPass');
+  var regPass2Input = document.getElementById('regPass2');
+  var strengthMeter = document.getElementById('passStrengthMeter');
+  var strengthBar   = document.getElementById('strengthBar');
+  var strengthLabel = document.getElementById('strengthLabel');
+  var passMatchLabel = document.getElementById('passMatchLabel');
 
-  function evaluatePasswordStrength(password) {
-    let score = 0;
-    if (!password) return 0;
-    if (password.length >= 6) score += 1;
-    if (password.length >= 8) score += 1;
-    if (/[A-Z]/.test(password)) score += 1;
-    if (/[0-9]/.test(password)) score += 1;
-    if (/[^A-Za-z0-9]/.test(password)) score += 1;
-    return score;
-  }
-
-  if (regPassInput) {
-    regPassInput.addEventListener("input", () => {
-      const val = regPassInput.value;
-      if (!val) {
-        if (strengthMeter) strengthMeter.style.display = "none";
-        return;
-      }
-      if (strengthMeter) strengthMeter.style.display = "block";
-      const score = evaluatePasswordStrength(val);
-
-      if (score <= 2) {
-        strengthBar.style.width = "30%";
-        strengthBar.style.backgroundColor = "var(--crimson, #d32f2f)";
-        strengthLabel.textContent = "Weak password (use 8+ chars, numbers, uppercase)";
-        strengthLabel.style.color = "var(--crimson, #d32f2f)";
-      } else if (score <= 4) {
-        strengthBar.style.width = "65%";
-        strengthBar.style.backgroundColor = "#e67e22";
-        strengthLabel.textContent = "Moderate password";
-        strengthLabel.style.color = "#e67e22";
-      } else {
-        strengthBar.style.width = "100%";
-        strengthBar.style.backgroundColor = "var(--success, #2e7d32)";
-        strengthLabel.textContent = "Strong password";
-        strengthLabel.style.color = "var(--success, #2e7d32)";
-      }
-
-      checkMatch();
-    });
+  function evalStrength(pw) {
+    var s = 0;
+    if (!pw) return 0;
+    if (pw.length >= 6) s++;
+    if (pw.length >= 8) s++;
+    if (/[A-Z]/.test(pw)) s++;
+    if (/[0-9]/.test(pw)) s++;
+    if (/[^A-Za-z0-9]/.test(pw)) s++;
+    return s;
   }
 
   function checkMatch() {
     if (!regPass2Input || !passMatchLabel) return;
-    const p1 = regPassInput ? regPassInput.value : "";
-    const p2 = regPass2Input.value;
-    if (!p2) {
-      passMatchLabel.textContent = "";
-      return;
-    }
+    var p1 = regPassInput ? regPassInput.value : '';
+    var p2 = regPass2Input.value;
+    if (!p2) { passMatchLabel.textContent = ''; return; }
     if (p1 === p2) {
-      passMatchLabel.textContent = "✓ Passwords match";
-      passMatchLabel.style.color = "var(--success, #2e7d32)";
+      passMatchLabel.textContent = '✓ Passwords match';
+      passMatchLabel.style.color = 'var(--success, #2e7d32)';
     } else {
-      passMatchLabel.textContent = "✗ Passwords do not match";
-      passMatchLabel.style.color = "var(--crimson, #d32f2f)";
+      passMatchLabel.textContent = '✗ Passwords do not match';
+      passMatchLabel.style.color = 'var(--crimson, #d32f2f)';
     }
   }
 
-  if (regPass2Input) {
-    regPass2Input.addEventListener("input", checkMatch);
-  }
-
-  /* ---------------- Register (Author) ---------------- */
-  const registerForm = document.getElementById("registerForm");
-  const registerMsg = document.getElementById("registerMsg");
-
-  if (registerForm) {
-    registerForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      registerMsg.textContent = "";
-      registerMsg.classList.remove("success");
-
-      const name = document.getElementById("regName").value.trim();
-      const email = document.getElementById("regEmail").value.trim();
-      const affiliation = document.getElementById("regAffil").value.trim();
-      const username = document.getElementById("regUser").value.trim();
-      const password = document.getElementById("regPass").value;
-      const password2 = document.getElementById("regPass2").value;
-
-      if (!name || !email || !username || !password) {
-        registerMsg.textContent = "Fill in all required fields.";
-        return;
+  if (regPassInput) {
+    regPassInput.addEventListener('input', function () {
+      var val   = regPassInput.value;
+      if (!val) { if (strengthMeter) strengthMeter.style.display = 'none'; return; }
+      if (strengthMeter) strengthMeter.style.display = 'block';
+      var score = evalStrength(val);
+      if (score <= 2) {
+        strengthBar.style.width = '30%'; strengthBar.style.backgroundColor = '#d32f2f';
+        strengthLabel.textContent = 'Weak (use 8+ chars, numbers, uppercase)'; strengthLabel.style.color = '#d32f2f';
+      } else if (score <= 4) {
+        strengthBar.style.width = '65%'; strengthBar.style.backgroundColor = '#e67e22';
+        strengthLabel.textContent = 'Moderate'; strengthLabel.style.color = '#e67e22';
+      } else {
+        strengthBar.style.width = '100%'; strengthBar.style.backgroundColor = '#2e7d32';
+        strengthLabel.textContent = 'Strong password ✓'; strengthLabel.style.color = '#2e7d32';
       }
-      if (password !== password2) {
-        registerMsg.textContent = "Passwords do not match.";
-        return;
-      }
-
-      try {
-        const res = await fetch("api/auth.php?action=register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, affiliation, username, password }),
-        });
-        const data = await res.json();
-
-        if (!res.ok || data.error) {
-          registerMsg.textContent = data.error || "Could not create account.";
-          return;
-        }
-
-        registerMsg.textContent = data.message || "Account created successfully! Redirecting...";
-        registerMsg.classList.add("success");
-        registerForm.reset();
-
-        // Save session if returned and redirect directly to author dashboard
-        if (data.user) {
-          sessionStorage.setItem("rpms_user", JSON.stringify(data.user));
-        }
-
-        setTimeout(() => {
-          window.location.href = "author.html";
-        }, 1200);
-
-      } catch (err) {
-        registerMsg.textContent =
-          "Backend not connected yet — build api/auth.php + api/db.php to make registration live.";
-      }
+      checkMatch();
     });
   }
 
-});
+  if (regPass2Input) {
+    regPass2Input.addEventListener('input', checkMatch);
+  }
+
+  /* ── 3e. REGISTER form ── */
+  var registerForm = document.getElementById('registerForm');
+
+  if (registerForm) {
+    registerForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearAlert('registerAlert');
+
+      var name        = (document.getElementById('regName').value  || '').trim();
+      var email       = (document.getElementById('regEmail').value || '').trim();
+      var affiliation = (document.getElementById('regAffil').value || '').trim();
+      var username    = (document.getElementById('regUser').value  || '').trim();
+      var password    = document.getElementById('regPass').value  || '';
+      var password2   = document.getElementById('regPass2').value || '';
+
+      if (!name || !email || !username || !password) {
+        showAlert('registerAlert', 'Please fill in all required fields.', false); return;
+      }
+      if (password.length < 6) {
+        showAlert('registerAlert', 'Password must be at least 6 characters.', false); return;
+      }
+      if (password !== password2) {
+        showAlert('registerAlert', 'Passwords do not match.', false); return;
+      }
+
+      var submitBtn = registerForm.querySelector('button[type="submit"]');
+      var origText  = submitBtn ? submitBtn.textContent : 'Create Author Account';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Creating Account…'; }
+
+      fetch('api/auth.php?action=register', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    JSON.stringify({ name: name, email: email, affiliation: affiliation, username: username, password: password })
+      })
+      .then(function (res) {
+        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+      })
+      .then(function (result) {
+        var ok   = result.ok;
+        var data = result.data;
+
+        if (!ok || data.success === false || data.error) {
+          showAlert('registerAlert', data.error || data.message || 'Could not create account.', false);
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
+          return;
+        }
+
+        showAlert('registerAlert', data.message || 'Account created! Redirecting to dashboard…', true);
+        registerForm.reset();
+        if (strengthMeter) strengthMeter.style.display = 'none';
+        if (passMatchLabel) passMatchLabel.textContent = '';
+
+        if (data.user) sessionStorage.setItem('rpms_user', JSON.stringify(data.user));
+        setTimeout(function () { window.location.href = 'author.html'; }, 1000);
+      })
+      .catch(function (err) {
+        showAlert('registerAlert', 'Connection error: ' + err.message + '. Is XAMPP running?', false);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
+      });
+    });
+  }
+
+}); /* end DOMContentLoaded */

@@ -58,7 +58,7 @@
         <!-- Error / Success Alert Box -->
         <div class="auth-alert" id="loginAlert" role="alert" style="display: none;"></div>
 
-        <form id="loginForm">
+        <form id="loginForm" method="post">
           <div class="field">
             <label for="loginUser">Username or email</label>
             <input id="loginUser" name="username" type="text" autocomplete="username" placeholder="e.g. author or author@rpms.local" required>
@@ -91,7 +91,10 @@
 
       <!-- Register (Author) -->
       <div class="pane" id="pane-register">
-        <form id="registerForm">
+        <!-- Error / Success Alert Box -->
+        <div class="auth-alert" id="registerAlert" role="alert" style="display: none;"></div>
+
+        <form id="registerForm" method="post">
           <div class="field">
             <label for="regName">Full name</label>
             <input id="regName" name="name" type="text" required>
