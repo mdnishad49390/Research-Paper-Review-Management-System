@@ -11,7 +11,11 @@ header('Content-Type: application/json');
 
 require_once 'db.php';
 
-$conn = get_db_connection();
+$conn = get_db_connection(true);
+if (!$conn) {
+    echo json_encode(["success" => false, "error" => "Oracle Database connection unavailable."]);
+    exit;
+}
 
 $action = $_GET['action'] ?? '';
 

@@ -79,20 +79,9 @@
             <thead>
               <tr><th>Paper ID</th><th>Title</th><th>Track</th><th>Reviews in</th><th></th></tr>
             </thead>
-            <tbody>
+            <tbody id="pendingDecisionsTableBody">
               <tr>
-                <td class="mono">P-1038</td>
-                <td>Efficient Query Optimization in Distributed Databases</td>
-                <td>Databases</td>
-                <td>3 / 3</td>
-                <td><button class="btn-ghost" data-goto="decisions">Decide</button></td>
-              </tr>
-              <tr>
-                <td class="mono">P-1029</td>
-                <td>A Survey of Federated Learning Privacy Techniques</td>
-                <td>Security</td>
-                <td>2 / 3</td>
-                <td><button class="btn-ghost" data-goto="decisions">Decide</button></td>
+                <td colspan="5">Loading papers...</td>
               </tr>
             </tbody>
           </table>
@@ -183,9 +172,10 @@
               <div class="panel-head">
                 <h2>Record final decision</h2>
               </div>
-              <div class="field">
+              <div class="panel-body">
+                <form id="decisionForm">
+                  <div class="field">
                     <label for="dPaper">Paper</label>
-
                     <select
                       id="dPaper"
                       name="paper_id"
@@ -197,16 +187,12 @@
                     </select>
                   </div>
 
-
                   <!-- Status + Date -->
                   <div class="field-row">
-
                     <div class="field">
-
                       <label for="dStatus">
                         Final status
                       </label>
-
                       <select
                         id="dStatus"
                         name="final_status"
@@ -215,33 +201,25 @@
                         <option value="">
                           Select
                         </option>
-
                         <option value="Accepted">
                           Accepted
                         </option>
-
                         <option value="Rejected">
                           Rejected
                         </option>
-
                         <option value="Minor Revision">
                           Minor Revision
                         </option>
-
                         <option value="Major Revision">
                           Major Revision
                         </option>
                       </select>
-
                     </div>
 
-
                     <div class="field">
-
                       <label for="dDate">
                         Decision date
                       </label>
-
                       <input
                         id="dDate"
                         name="decision_date"
@@ -249,19 +227,14 @@
                         data-default-today
                         required
                       >
-
                     </div>
-
                   </div>
-
 
                   <!-- Remarks -->
                   <div class="field">
-
                     <label for="dRemarks">
                       Remarks
                     </label>
-
                     <input
                       id="dRemarks"
                       name="remarks"
@@ -270,9 +243,7 @@
                       placeholder="Summary shown to the author"
                       required
                     >
-
                   </div>
-
 
                   <button
                     id="recordDecisionBtn"
@@ -283,19 +254,11 @@
                   </button>
 
                   <div class="form-msg"></div>
-
                 </form>
-
               </div>
             </div>
 
           </section>
-              <div class="panel-body">
-
-                <form id="decisionForm">
-
-                  <!-- Paper -->
-   
 
       <!-- ================= REVIEWERS ================= -->
       <section class="dash-page" id="page-reviewers">
@@ -305,11 +268,8 @@
             <thead>
               <tr><th>Reviewer ID</th><th>Name</th><th>Email</th><th>Expertise</th><th>Active assignments</th></tr>
             </thead>
-            <tbody>
-              <tr><td class="mono">R-500</td><td>Dr. Farhana Islam</td><td>farhana@univ.edu</td><td>Databases</td><td>2</td></tr>
-              <tr><td class="mono">R-501</td><td>Dr. Rezwan Ahmed</td><td>rezwan@univ.edu</td><td>Machine Learning</td><td>1</td></tr>
-              <tr><td class="mono">R-502</td><td>Dr. Samiul Haque</td><td>samiul@univ.edu</td><td>Security</td><td>3</td></tr>
-              <tr><td class="mono">R-503</td><td>Dr. Tanvir Malik</td><td>tanvir@univ.edu</td><td>Human-Computer Interaction</td><td>0</td></tr>
+            <tbody id="reviewersTableBody">
+              <tr><td colspan="5">Loading reviewers...</td></tr>
             </tbody>
           </table>
         </div>

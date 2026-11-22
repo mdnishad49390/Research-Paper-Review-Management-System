@@ -660,6 +660,8 @@ document.addEventListener("DOMContentLoaded", () => {
               submitPaperForm
             );
 
+          formData.append("author_id", AUTHOR_ID);
+
 
           const response =
             await fetch(
@@ -1310,6 +1312,11 @@ document.addEventListener("DOMContentLoaded", () => {
         data.score =
           Number(
             data.score
+          );
+
+        data.reviewer_id =
+          Number(
+            REVIEWER_ID
           );
 
 
