@@ -11,7 +11,11 @@ header('Content-Type: application/json');
 
 require_once 'db.php';
 
-$conn = get_db_connection();
+$conn = get_db_connection(true);
+if (!$conn) {
+    echo json_encode(["success" => false, "error" => "Oracle Database connection unavailable."]);
+    exit;
+}
 
 $action = $_GET['action'] ?? '';
 
@@ -479,11 +483,12 @@ if ($action === "assign_reviewer") {
 
         if (!oci_execute(
             $stmt,
-            OCI_COMMIT_ON_SUCCESS
+            OCI_NO_AUTO_COMMIT
         )) {
 
             $error = oci_error($stmt);
 
+            oci_rollback($conn);
             echo json_encode([
                 "success" => false,
                 "error" => $error["message"]
@@ -492,6 +497,18 @@ if ($action === "assign_reviewer") {
             exit;
         }
 
+        /* Update Paper status to 'Under Review' if currently 'Submitted' */
+        $updatePaperSql = "
+            UPDATE PAPER
+            SET PAPER_STATUS = 'Under Review'
+            WHERE PAPER_ID = :paper_id
+              AND (UPPER(PAPER_STATUS) = 'SUBMITTED' OR PAPER_STATUS IS NULL)
+        ";
+        $updatePaperStmt = oci_parse($conn, $updatePaperSql);
+        oci_bind_by_name($updatePaperStmt, ":paper_id", $paper_id);
+        oci_execute($updatePaperStmt, OCI_NO_AUTO_COMMIT);
+
+        oci_commit($conn);
 
         echo json_encode([
             "success" => true,

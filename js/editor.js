@@ -5,6 +5,20 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    /* --- User Session & Topbar --- */
+    const savedUser = JSON.parse(sessionStorage.getItem("rpms_user") || "null");
+    if (savedUser && savedUser.name) {
+        const userSpan = document.querySelector(".topbar-user span");
+        if (userSpan) userSpan.textContent = savedUser.name;
+        const avatar = document.querySelector(".topbar-user .avatar");
+        if (avatar) {
+            const parts = savedUser.name.trim().split(/\s+/);
+            avatar.textContent = parts.length > 1
+                ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                : savedUser.name.substring(0, 2).toUpperCase();
+        }
+    }
+
     /* =========================================================
        ELEMENTS
        ========================================================= */
@@ -74,6 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     data.tracks;
             }
 
+            await loadPendingDecisions();
+
         } catch (error) {
 
             console.error(
@@ -81,6 +97,62 @@ document.addEventListener("DOMContentLoaded", () => {
                 error
             );
 
+        }
+    }
+
+
+
+    /* =========================================================
+       LOAD PAPERS AWAITING A DECISION (DASHBOARD)
+       ========================================================= */
+
+    async function loadPendingDecisions() {
+        const tableBody = document.getElementById("pendingDecisionsTableBody");
+        if (!tableBody) return;
+
+        try {
+            const [pRes, dRes] = await Promise.all([
+                fetch("api/editor.php?action=papers"),
+                fetch("api/editor.php?action=decisions")
+            ]);
+            const pData = await pRes.json();
+            const dData = await dRes.json();
+
+            if (!pData.success) {
+                tableBody.innerHTML = `<tr><td colspan="5">${pData.error || "Unable to load papers."}</td></tr>`;
+                return;
+            }
+
+            const decidedIds = new Set((dData.decisions || []).map(d => String(d.paper_id)));
+            const pendingPapers = (pData.papers || []).filter(p => !decidedIds.has(String(p.paper_id)));
+
+            if (pendingPapers.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--muted); padding: 16px;">No papers awaiting a decision.</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = pendingPapers.map(paper => `
+                <tr>
+                    <td class="mono">P-${paper.paper_id}</td>
+                    <td>${paper.title}</td>
+                    <td>${paper.track || ""}</td>
+                    <td>${paper.review_count} / 3</td>
+                    <td><button type="button" class="btn-ghost decide-btn" data-paper-id="${paper.paper_id}">Decide</button></td>
+                </tr>
+            `).join("");
+
+            tableBody.querySelectorAll(".decide-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const paperId = btn.dataset.paperId;
+                    const dPaper = document.getElementById("dPaper");
+                    if (dPaper) dPaper.value = paperId;
+                    const decisionsBtn = document.querySelector('.sb-link[data-page="decisions"]');
+                    if (decisionsBtn) decisionsBtn.click();
+                });
+            });
+        } catch (error) {
+            console.error("Pending decisions load error:", error);
+            tableBody.innerHTML = `<tr><td colspan="5">Backend connection failed.</td></tr>`;
         }
     }
 
@@ -478,8 +550,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         assignForm.reset();
 
                         await loadAssignData();
-
                         await loadReviewers();
+                        await loadDashboard();
+                        await loadPapers();
+                        await loadPendingDecisions();
 
                     } else {
 
